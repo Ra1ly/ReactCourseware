@@ -30,7 +30,7 @@ const CreditCardForm = () => {
 
     const validateCVC = (cvc) => {
         const sanitizedCVC = cvc.replace(/\D/g, '');
-        return sanitizedCVC.length === 3; // Проверяем, состоит ли CVV из 3 цифр
+        return sanitizedCVC.length === 3;
     };
 
     const validateForm = () => {
@@ -54,13 +54,13 @@ const CreditCardForm = () => {
         e.preventDefault();
         if (validateForm()) {
             console.log({ number, name, expiry, cvc });
-            // Здесь можно сделать запрос на сервер или другую обработку
+            // Здесь нужно сделать запрос на сервер или другую обработку
         }
     };
 
     return (
         <div className="container mt-5">
-            <h2>Добавить кредитную карточку</h2>
+
             {error && <div className="alert alert-danger">{error}</div>}
             <form onSubmit={handleSubmit}>
                 <ReactCreditCards

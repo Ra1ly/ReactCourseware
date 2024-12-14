@@ -1,0 +1,83 @@
+.spin-menu-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    height: 190px;
+    width: 300px;
+    position: relative;
+    overflow: hidden;
+}
+
+.credit-card-container {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+    height: 180px;
+    cursor: pointer;
+    transition: transform 0.5s ease;
+    top: 0;
+    margin: 0 10px;
+}
+
+.credit-card-container:nth-child(1) {
+    transform: translateX(0);
+}
+
+.credit-card-container:nth-child(2) {
+    transform: translateX(100%);
+}
+
+.credit-card-container:nth-child(3) {
+    transform: translateX(200%);
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    margin: 0 5px;
+    background-color: #ccc;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.dot.active {
+    background-color: #007bff;
+}
+
+.add-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 280px;
+    height: 180px;
+    background-color: #d5d5d5;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+}
+
+.add-card-image {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+}
+
+.slide-in {
+    transform: translateX(100%);
+}
+
+.slide-out {
+    transform: translateX(-100%);
+}
