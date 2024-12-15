@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ReactCreditCards from 'react-credit-cards';
 import 'react-credit-cards/es/styles-compiled.css';
+import CardService from "../services/CardService.js"
 
 const CreditCardForm = () => {
     const [number, setNumber] = useState('');
@@ -54,22 +55,24 @@ const CreditCardForm = () => {
         e.preventDefault();
         if (validateForm()) {
             console.log({ number, name, expiry, cvc });
-            // Здесь нужно сделать запрос на сервер или другую обработку
+            CardService.addCard(number,name,expiry,cvc);
         }
     };
 
     return (
-        <div className="container mt-5">
+        <div className="container mb-1">
 
             {error && <div className="alert alert-danger">{error}</div>}
             <form onSubmit={handleSubmit}>
-                <ReactCreditCards
-                    number={number}
-                    name={name}
-                    expiry={expiry}
-                    cvc={cvc}
-                    focused={focused}
-                />
+                <div className="container mb-md-3">
+                    <ReactCreditCards
+                        number={number}
+                        name={name}
+                        expiry={expiry}
+                        cvc={cvc}
+                        focused={focused}
+                    />
+                </div>
                 <div className="form-group">
                     <label>Номер карточки</label>
                     <input
@@ -78,7 +81,7 @@ const CreditCardForm = () => {
                         onChange={(e) => setNumber(e.target.value)}
                         onFocus={() => setFocused('number')}
                         className="form-control"
-                        placeholder="Номер карточки"
+                        placeholder="1234 1234 1234 1234"
                         required
                         minLength={16}
                         maxLength={16}
@@ -93,7 +96,7 @@ const CreditCardForm = () => {
                         onChange={(e) => setName(e.target.value)}
                         onFocus={() => setFocused('name')}
                         className="form-control"
-                        placeholder="Имя владельца"
+                        placeholder="IVAN IVANOV"
                         required
                         pattern="^[A-Za-z]{2,} [A-Za-z]{2,}$" // Два латинских слова
                     />
@@ -126,7 +129,9 @@ const CreditCardForm = () => {
                         pattern="\d{3}" // 3 цифры
                     />
                 </div>
-                <button type="submit" className="btn btn-primary">Добавить карточку</button>
+                <div className="container text-center mt-3">
+                    <button type="submit" className="btn btn-primary">Добавить карточку</button>
+                </div>
             </form>
         </div>
     );

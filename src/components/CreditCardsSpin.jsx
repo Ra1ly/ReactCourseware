@@ -1,24 +1,53 @@
-import React, { useState } from 'react';
-import { Modal } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import {Button, Modal} from 'react-bootstrap';
 import CreditCardForm from "./CardFormComponent.jsx";
 import "../style/spinMenu.css";
 import ReactCreditCards from 'react-credit-cards';
 import plusImage from '../assets/plus50.png';
+import CardService from "../services/CardService.js";
+import { FaTimes } from 'react-icons/fa';
 
 const SpinMenu = () => {
     const [showModal, setShowModal] = useState(false);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [selectedCard, setSelectedCard] = useState(0);
+    const [cards, setCards] = useState([]);
+    const [cardToDelete, setCardToDelete] = useState(null);
 
     const handleClose = () => setShowModal(false);
     const handleShow = () => setShowModal(true);
+    const handleCloseConfirm = () => setShowConfirmModal(false);
 
-    const cards = [
-        { number: "4916 1616 1616 1616", name: "Иван Иванов", expiry: "12/25", cvc: "123" },
-        { number: "4024 1234 5678 9010", name: "Мария Петрова", expiry: "11/24", cvc: "456" },
-        { number: "5123 4567 8910 1113", name: "Сергей Сидоров", expiry: "10/23", cvc: "789" },
-    ];
+    useEffect(() => {
+        loadCards();
+    }, []);
 
-    const totalCards = cards.length + 1; // Учитываем элемент с плюсом
+    const loadCards = () => {
+        CardService.getCards()
+            .then((response) => {
+                setCards(response.data);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+
+    const deleteCard = (card) => {
+        CardService.deleteCard(card)
+            .then(() => {
+                handleCloseConfirm();
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+
+    const confirmDeleteCard = (card) => {
+        setCardToDelete(card);
+        setShowConfirmModal(true);
+    };
+
+    const totalCards = cards.length + 1;
 
     return (
         <div className="container mt-5">
@@ -41,13 +70,24 @@ const SpinMenu = () => {
                                 <img src={plusImage} alt="Add Card" className="add-card-image" />
                             </div>
                         ) : (
-                            <ReactCreditCards
-                                number={cards[index].number}
-                                name={cards[index].name}
-                                expiry={cards[index].expiry}
-                                cvc={cards[index].cvc}
-                                focused="number"
-                            />
+                            <div className="card-with-delete">
+                                <ReactCreditCards
+                                    number={cards[index].cardNumber}
+                                    name={cards[index].cardholderName}
+                                    expiry={cards[index].expiryDate}
+                                    cvc="***"
+                                    focused="number"
+                                />
+                                <button
+                                    className="delete-card-button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        confirmDeleteCard(cards[index]);
+                                    }}
+                                >
+                                    <FaTimes />
+                                </button>
+                            </div>
                         )}
                     </div>
                 ))}
@@ -70,6 +110,21 @@ const SpinMenu = () => {
                 <Modal.Body>
                     <CreditCardForm />
                 </Modal.Body>
+            </Modal>
+
+
+            <Modal show={showConfirmModal} onHide={handleCloseConfirm} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Подтвердите удаление</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Вы уверены, что хотите удалить эту карту?
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="btn btn-danger" onClick={() => deleteCard(cardToDelete)}>
+                        Удалить
+                    </Button>
+                </Modal.Footer>
             </Modal>
         </div>
     );
