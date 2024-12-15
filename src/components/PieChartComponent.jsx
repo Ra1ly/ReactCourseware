@@ -1,13 +1,12 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
 import {Pie} from "react-chartjs-2"
-import {listRecords} from "../services/RecordService.js";
 import {ArcElement, Chart as ChartJS, Tooltip, Legend} from "chart.js";
 
 ChartJS.register(ArcElement,Tooltip,Legend);
 
-const PieChart = () => {
+const PieChart = ({records}) => {
 
-    const [records, setRecords] = useState([])
+    /*const [records, setRecords] = useState([])
 
 
     useEffect(() => {
@@ -16,7 +15,7 @@ const PieChart = () => {
         }).catch(error => {
             console.error(error)
         })
-    }, []);
+    }, []);*/
 
     const groupedData = records.reduce((acc, record) => {
         const category = record.category.category;
@@ -51,8 +50,8 @@ const PieChart = () => {
                     fontSize: 15
                 },
                 legend: {
-                    display: true, //Is the legend shown?
-                    position: "top" //Position of the legend.
+                    display: true,
+                    position: "top"
                 }
             }}
             data={pieChartData}

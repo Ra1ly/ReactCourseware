@@ -17,6 +17,7 @@ const login = (username, password) => {
         .then((response) => {
             if (response.data.username) {
                 sessionStorage.setItem("user", JSON.stringify(response.data));
+                sessionStorage.setItem("family",null);
                 console.log(JSON.stringify(response.data))
             }
 

@@ -1,47 +1,21 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
-import { listUserRecords, addRecord, listCategories } from "../services/RecordService.js";
 import { useNavigate } from "react-router-dom";
-import { Pagination, Table, Form, Row, Col, Button, Modal } from "react-bootstrap";
-import AuthService from "../services/AuthService.js";
+import { Pagination, Table, Form, Row, Col, Button } from "react-bootstrap";
+import {listFamilyRecords} from "../services/FamilyService.js";
 
-function RecordsComponent({ updateRecords }) {
+function RecordsComponent({ selectedUserIds =[]}) {
     const [records, setRecords] = useState([]);
-    const [categories, setCategories] = useState([]);
-    const [showModal, setShowModal] = useState(false);
-    const [newRecord, setNewRecord] = useState({
-        date: '',
-        category: { id: '', category: '' },
-        description: '',
-        amount: ''
-    });
     const navigator = useNavigate();
 
     useEffect(() => {
-        fetchRecords();
-        fetchCategories();
-    }, []);
-
-    const fetchRecords = () => {
-        listUserRecords()
+        listFamilyRecords()
             .then((response) => {
                 setRecords(response.data);
-                updateRecords(response.data)
             })
             .catch((error) => {
                 console.error(error);
             });
-    };
-
-    const fetchCategories = () => {
-        listCategories()
-            .then((response) => {
-                setCategories(response.data);
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    };
+    }, []);
 
     const [searchTerm, setSearchTerm] = useState('');
     const [sortField, setSortField] = useState('id');
@@ -51,12 +25,14 @@ function RecordsComponent({ updateRecords }) {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
 
+    // Фильтруем записи по выбранным пользователям
     const filteredData = records.filter(record => {
+        const isUserSelected = selectedUserIds.includes(record.user.id);
         const recordDate = new Date(record.date);
         const isWithinDateRange = (!startDate || recordDate >= new Date(startDate)) &&
             (!endDate || recordDate <= new Date(endDate));
 
-        return isWithinDateRange && Object.values(record).some(value => {
+        return isUserSelected && isWithinDateRange && Object.values(record).some(value => {
             if (typeof value === 'object' && value !== null && value.category) {
                 return value.category.toLowerCase().includes(searchTerm.toLowerCase());
             } else if (typeof value === 'string') {
@@ -94,40 +70,6 @@ function RecordsComponent({ updateRecords }) {
         setEndDate('');
         setItemsPerPage(5);
         setCurrentPage(1);
-    };
-
-    const handleShowModal = () => setShowModal(true);
-    const handleCloseModal = () => setShowModal(false);
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setNewRecord(prevState => ({ ...prevState, [name]: value }));
-    };
-
-    const handleCategoryChange = (e) => {
-        const selectedCategory = categories.find(cat => cat.id === parseInt(e.target.value));
-        setNewRecord(prevState => ({ ...prevState, category: selectedCategory }));
-    };
-
-    const handleSaveRecord = () => {
-        const user = AuthService.getCurrentUser();
-
-        const recordToSave = {
-            ...newRecord,
-            user
-        };
-
-        console.log("Данные для отправки:", recordToSave);
-
-        addRecord(recordToSave)
-            .then(() => {
-                fetchRecords();
-                handleCloseModal();
-                setNewRecord({ date: '', category: { id: '', category: '' }, description: '', amount: '' });
-            })
-            .catch((error) => {
-                console.error("Ошибка при сохранении записи:", error);
-            });
     };
 
     return (
@@ -173,9 +115,6 @@ function RecordsComponent({ updateRecords }) {
                     <Button variant="tertiary" onClick={resetFilters}>
                         <img width="25" height="25" src="https://img.icons8.com/ios/50/reboot.png" alt="Сбросить"/>
                     </Button>
-                    <Button variant="primary" onClick={handleShowModal}>
-                        + Добавить запись
-                    </Button>
                 </Col>
             </Row>
 
@@ -218,70 +157,6 @@ function RecordsComponent({ updateRecords }) {
                 ))}
                 <Pagination.Next onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))} />
             </Pagination>
-
-            {/* Модальное окно для добавления новой записи */}
-            <Modal show={showModal} onHide={handleCloseModal}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Добавить новую запись</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form>
-                        <Form.Group controlId="formDate">
-                            <Form.Label>Дата</Form.Label>
-                            <Form.Control
-                                type="date"
-                                name="date"
-                                value={newRecord.date}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formCategory">
-                            <Form.Label>Категория</Form.Label>
-                            <Form.Select
-                                name="category"
-                                onChange={handleCategoryChange}
-                                required
-                            >
-                                <option key="">Выберите категорию</option>
-                                {categories.map(category => (
-                                    <option key={category.id} value={category.id}>
-                                        {category.category}
-                                    </option>
-                                ))}
-                            </Form.Select>
-                        </Form.Group>
-                        <Form.Group controlId="formDescription">
-                            <Form.Label>Описание</Form.Label>
-                            <Form.Control
-                                type="text"
-                                name="description"
-                                value={newRecord.description}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </Form.Group>
-                        <Form.Group controlId="formAmount">
-                            <Form.Label>Сумма</Form.Label>
-                            <Form.Control
-                                type="number"
-                                name="amount"
-                                value={newRecord.amount}
-                                onChange={handleInputChange}
-                                required
-                            />
-                        </Form.Group>
-                    </Form>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseModal}>
-                        Закрыть
-                    </Button>
-                    <Button variant="primary" onClick={handleSaveRecord}>
-                        Сохранить запись
-                    </Button>
-                </Modal.Footer>
-            </Modal>
         </div>
     );
 }

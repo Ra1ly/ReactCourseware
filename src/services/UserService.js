@@ -6,10 +6,6 @@ export const listUsers = () => {
     return axios.get(REST_API_BASE_URL + '/get-list')
 }
 
-export const createPerson = (person) => axios.post(REST_API_BASE_URL + '/register', person)
-
-export const getPerson =  (personId) => axios.get(REST_API_BASE_URL+'/'+personId)
-
 export const updateUser = () =>{
     const user = AuthService.getCurrentUser();
     axios.post(REST_API_BASE_URL + '/update',user)
@@ -39,3 +35,20 @@ export const uploadImage = async (file) => {
         console.error("Failed to upload image");
     }
 };
+
+export const getUserImage = async ()=>{
+    try {
+        const response = await axios.get(`http://localhost:8080/images/${AuthService.getCurrentUser().image}`, {
+            responseType: 'arraybuffer',
+        });
+        console.log('Response data size:', response.data.byteLength);
+        const base64Image = btoa(
+            new Uint8Array(response.data).reduce((data, byte) => data + String.fromCharCode(byte), '')
+        );
+
+        return `data:image/${AuthService.getCurrentUser().image.split('.').pop()};base64,${base64Image}`;
+    } catch (error) {
+        console.error("Error fetching user image:", error);
+        throw error;
+    }
+}

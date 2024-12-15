@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
-import { listRecords } from "../services/RecordService.js";
 import {
     Chart as ChartJS,
     LineElement,
@@ -12,11 +11,10 @@ import {
     CategoryScale
 } from 'chart.js';
 
-// Регистрация необходимых элементов
 ChartJS.register(LineElement, PointElement, LinearScale, Title, Tooltip, Legend, CategoryScale);
 
-const Chart = () => {
-    const [records, setRecords] = useState([]);
+const Chart = ({records}) => {
+   /* const [records, setRecords] = useState([]);
 
     useEffect(() => {
         listRecords()
@@ -26,7 +24,7 @@ const Chart = () => {
             .catch((error) => {
                 console.error(error);
             });
-    }, []);
+    }, []);*/
 
     // Группировка данных для линейной диаграммы
     const lineData = records.reduce((acc, record) => {
@@ -34,7 +32,7 @@ const Chart = () => {
         if (!acc[date]) {
             acc[date] = 0;
         }
-        acc[date] += 1; // Считаем количество записей для каждой даты
+        acc[date] += 1;
         return acc;
     }, {});
 
@@ -71,7 +69,7 @@ const Chart = () => {
                             },
                             ticks: {
                                 beginAtZero: true, // Начинаем с нуля
-                                stepSize: 1, // Шаг 1 для отображения целых чисел
+                                stepSize: 1,
                                 callback: (value) => Number.isInteger(value) ? value : null // Отображаем только целые числа
                             }
                         }

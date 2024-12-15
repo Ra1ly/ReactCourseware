@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import AuthService from "../services/AuthService.js";
 import { Modal, Button, Form, Card } from "react-bootstrap";
 import "../style/profile.css";
@@ -8,12 +8,20 @@ const Profile = () => {
     const currentUser = AuthService.getCurrentUser();
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
+        id: currentUser.id,
         username: currentUser.username,
         email: currentUser.email,
         realName: currentUser.realName,
         image: currentUser.image
     });
     const [imagePreview, setImagePreview] = useState(currentUser.imagePath);
+
+    useEffect(() => {
+        const storedImage = localStorage.getItem('userImage');
+        if (storedImage) {
+            setImagePreview(storedImage);
+        }
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -23,8 +31,13 @@ const Profile = () => {
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            setFormData({ ...formData, image: file });
-            setImagePreview(URL.createObjectURL(file));
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFormData({ ...formData, image: file });
+                setImagePreview(reader.result);
+                localStorage.setItem('userImage', reader.result);
+            };
+            reader.readAsDataURL(file);
         }
     };
 
@@ -41,7 +54,7 @@ const Profile = () => {
                 ...formData,
                 image: imagePath
             };
-
+            console.log(updatedData);
             sessionStorage.setItem('user', JSON.stringify(updatedData));
 
             await updateUser(updatedData);
@@ -57,36 +70,37 @@ const Profile = () => {
             <Card className="profile-card">
                 <Card.Body>
                     <Card.Title className="text-center">
-                        <strong>{currentUser.username}</strong>'s Profile
+                        Профиль пользователя
                     </Card.Title>
-                    <img
+                    <Card.Img
                         src={imagePreview}
                         alt="Profile"
                         style={{ width: '150px', height: '150px', borderRadius: '50%', marginBottom: '15px' }}
                     />
+
                     <Card.Text>
-                        <strong>Id:</strong> {currentUser.id}
+                        <strong>Имя пользователя</strong> {currentUser.username}
+                    </Card.Text>
+                    <Card.Text>
+                        <strong>Настоящее имя:</strong> {currentUser.realName}
                     </Card.Text>
                     <Card.Text>
                         <strong>Email:</strong> {currentUser.email}
                     </Card.Text>
-                    <Card.Text>
-                        <strong>Real Name:</strong> {currentUser.realName}
-                    </Card.Text>
                     <Button variant="primary" onClick={() => setIsEditing(true)}>
-                        Edit Profile
+                        Редактировать профиль
                     </Button>
                 </Card.Body>
             </Card>
 
             <Modal show={isEditing} onHide={() => setIsEditing(false)} centered>
                 <Modal.Header closeButton>
-                    <Modal.Title>Edit Profile</Modal.Title>
+                    <Modal.Title>Редактирование</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form onSubmit={handleSubmit}>
                         <Form.Group controlId="formUsername">
-                            <Form.Label>Username</Form.Label>
+                            <Form.Label>Имя пользователя:</Form.Label>
                             <Form.Control
                                 type="text"
                                 name="username"
@@ -106,7 +120,7 @@ const Profile = () => {
                             />
                         </Form.Group>
                         <Form.Group controlId="formRealName">
-                            <Form.Label>Real Name</Form.Label>
+                            <Form.Label>Настоящее имя:</Form.Label>
                             <Form.Control
                                 type="text"
                                 name="realName"
@@ -116,7 +130,7 @@ const Profile = () => {
                             />
                         </Form.Group>
                         <Form.Group controlId="formImage">
-                            <Form.Label>Profile Image</Form.Label>
+                            <Form.Label>Изображение профиля</Form.Label>
                             <Form.Control
                                 type="file"
                                 accept="image/*"
@@ -129,7 +143,7 @@ const Profile = () => {
                             style={{ width: '100px', height: '100px', borderRadius: '50%', marginTop: '10px' }}
                         />
                         <Button variant="primary" type="submit" style={{ marginTop: '15px' }}>
-                            Save Changes
+                            Сохранить изменения
                         </Button>
                     </Form>
                 </Modal.Body>
