@@ -1,9 +1,9 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from "react";
 import { listUserRecords, addRecord, listCategories } from "../services/RecordService.js";
 import { useNavigate } from "react-router-dom";
 import { Pagination, Table, Form, Row, Col, Button, Modal } from "react-bootstrap";
 import AuthService from "../services/AuthService.js";
+import "../style/styles.css";
 
 function RecordsComponent({ updateRecords }) {
     const [records, setRecords] = useState([]);
@@ -26,7 +26,7 @@ function RecordsComponent({ updateRecords }) {
         listUserRecords()
             .then((response) => {
                 setRecords(response.data);
-                updateRecords(response.data)
+                updateRecords(response.data);
             })
             .catch((error) => {
                 console.error(error);
@@ -117,8 +117,6 @@ function RecordsComponent({ updateRecords }) {
             user
         };
 
-        console.log("Данные для отправки:", recordToSave);
-
         addRecord(recordToSave)
             .then(() => {
                 fetchRecords();
@@ -131,8 +129,8 @@ function RecordsComponent({ updateRecords }) {
     };
 
     return (
-        <div>
-            <Row className="mb-3">
+        <div className="my-4 p-4 border rounded">
+            <Row className="mb-3 align-items-end">
                 <Col md={2}>
                     <Form.Select
                         size="sm"
@@ -153,33 +151,28 @@ function RecordsComponent({ updateRecords }) {
                     />
                 </Col>
                 <Col md={3} className="text-end">
-                    <Form.Group className="d-flex flex-column">
-                        <div className="d-flex">
-                            <Form.Control
-                                type="date"
-                                value={startDate}
-                                onChange={(e) => setStartDate(e.target.value)}
-                                className="me-2"
-                            />
-                            <Form.Control
-                                type="date"
-                                value={endDate}
-                                onChange={(e) => setEndDate(e.target.value)}
-                            />
-                        </div>
-                    </Form.Group>
+                    <div className="d-flex">
+                        <Form.Control
+                            type="date"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                            className="me-2"
+                        />
+                        <Form.Control
+                            type="date"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                        />
+                    </div>
                 </Col>
                 <Col className="text-end">
-                    <Button variant="tertiary" onClick={resetFilters}>
-                        <img width="25" height="25" src="https://img.icons8.com/ios/50/reboot.png" alt="Сбросить"/>
-                    </Button>
-                    <Button variant="primary" onClick={handleShowModal}>
-                        + Добавить запись
+                    <Button variant="tertiary" onClick={resetFilters} className="me-2">
+                        <img width="25" height="25" src="https://img.icons8.com/ios/50/reboot.png" alt="Сбросить" />
                     </Button>
                 </Col>
             </Row>
 
-            <Table striped bordered hover className="table-responsive">
+            <Table striped bordered hover className="table-responsive table-fixed">
                 <thead>
                 <tr>
                     <th onClick={() => handleSort('date')} style={{ cursor: 'pointer' }}>
@@ -208,16 +201,26 @@ function RecordsComponent({ updateRecords }) {
                 </tbody>
             </Table>
 
-            <Pagination>
-                <Pagination.Prev onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} />
-                {[...Array(totalPages).keys()].map((number) => (
-                    <Pagination.Item key={number + 1} active={number + 1 === currentPage}
-                                     onClick={() => setCurrentPage(number + 1)}>
-                        {number + 1}
-                    </Pagination.Item>
-                ))}
-                <Pagination.Next onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))} />
-            </Pagination>
+            <Row className="d-flex justify-content-between align-items-center mt-3">
+                <Col md={6} className="d-flex">
+                    <Pagination className="me-auto">
+                        <Pagination.Prev onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} />
+                        {[...Array(totalPages).keys()].map((number) => (
+                            <Pagination.Item key={number + 1} active={number + 1 === currentPage}
+                                             onClick={() => setCurrentPage(number + 1)}>
+                                {number + 1}
+                            </Pagination.Item>
+                        ))}
+                        <Pagination.Next onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))} />
+                    </Pagination>
+                </Col>
+
+                <Col md={6} className="text-end">
+                    <Button variant="primary" onClick={handleShowModal} style={{ width: '160px' }}>
+                        Добавить запись
+                    </Button>
+                </Col>
+            </Row>
 
             {/* Модальное окно для добавления новой записи */}
             <Modal show={showModal} onHide={handleCloseModal}>

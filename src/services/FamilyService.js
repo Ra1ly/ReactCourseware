@@ -23,7 +23,7 @@ export const getFamilyByUser = () => {
     const user = AuthService.getCurrentUser();
     axios.get(REST_API_BASE_URL + '/get-family-by-user?userId='+user.id)
         .then((response) => {
-            if (response.data.familyName) {
+            if (response.data) {
                 sessionStorage.setItem("family", JSON.stringify(response.data));
                 console.log(JSON.stringify(response.data));
             }

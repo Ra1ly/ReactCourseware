@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { getFamilyUsers } from "../services/FamilyService.js";
-import { Card, Col, Row, Form } from "react-bootstrap";
+import {getCurrentFamily, getFamilyUsers} from "../services/FamilyService.js";
+import {Card, Col, Row, Form, Tab, Tabs} from "react-bootstrap";
 import FamilyRecordsComponent from "./FamilyRecordsComponent.jsx";
+import FamilyPieChart from "./FamilyPieChart.jsx";
+import FamilyLineChartComponent from "./FamilyLineChartComponent.jsx";
 
 const FamilyComponent = () => {
     const [users, setUsers] = useState([]);
@@ -31,9 +33,14 @@ const FamilyComponent = () => {
         });
     };
 
+
+
     return (
         <div className="user-list">
-            <h2>Список пользователей</h2>
+            <h2>Участники семьи {getCurrentFamily().familyName}</h2>
+            <div className="invitation-code mb-3">
+                <strong>Код приглашения:</strong> {getCurrentFamily().invitationCode}
+            </div>
             <Row xs={1} md={2} lg={3} className="g-4">
                 {users.length > 0 ? (
                     users.map((user) => (
@@ -48,7 +55,7 @@ const FamilyComponent = () => {
                                         onChange={() => handleCheckboxChange(user.id)}
                                     />
                                     <Card.Text>
-                                        <strong>Имя:</strong> {user.realName}<br />
+                                        <strong>Имя:</strong> {user.realName}<br/>
                                         <strong>Email:</strong> {user.email}
                                     </Card.Text>
                                 </Card.Body>
@@ -65,7 +72,17 @@ const FamilyComponent = () => {
                     </Col>
                 )}
             </Row>
-            <FamilyRecordsComponent selectedUserIds={selectedUsers}/>
+            <Tabs defaultActiveKey="records" id="uncontrolled-tab-example" className="mb-3">
+                <Tab eventKey="records" title="Записи">
+                    <FamilyRecordsComponent selectedUserIds={selectedUsers}/>
+                </Tab>
+                <Tab eventKey="pieChart" title="Круговая диаграмма">
+                    <FamilyPieChart selectedUserIds={selectedUsers}/>
+                </Tab>
+                <Tab eventKey="lineChart" title="Линейная диаграмма">
+                    <FamilyLineChartComponent selectedUserIds={selectedUsers}/>
+                </Tab>
+            </Tabs>
         </div>
 
     );

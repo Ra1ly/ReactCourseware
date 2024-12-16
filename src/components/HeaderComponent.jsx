@@ -1,14 +1,15 @@
 import React from "react";
 
 const HeaderComponent = () => {
-  return (
-    <div>
-        <header>
-            <nav className="navbar navbar-dark bg-dark">
-                <a className="navbar-brand" href="#">User management system</a>
-            </nav>
-        </header>
-    </div>
-  )
+    return (
+        <div>
+            <header>
+                <nav className="navbar navbar-dark bg-dark">
+                    <a className="navbar-brand" href="/" style={{ padding: '0 15px' }}>Главная страница</a>
+                </nav>
+            </header>
+        </div>
+    )
 }
-export default HeaderComponent
+
+export default HeaderComponent;

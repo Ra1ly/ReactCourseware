@@ -1,11 +1,28 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { Pie } from "react-chartjs-2";
 import { ArcElement, Chart as ChartJS, Tooltip, Legend } from "chart.js";
+import {useNavigate} from "react-router-dom";
+import {listFamilyRecords} from "../services/FamilyService.js";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const PieChart = ({ records }) => {
-    const groupedData = records.reduce((acc, record) => {
+const PieChart = ({ selectedUserIds }) => {
+    const [records, setRecords] = useState([]);
+
+    useEffect(() => {
+        listFamilyRecords()
+            .then((response) => {
+                setRecords(response.data);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }, []);
+
+    const filteredData = records.filter(record =>
+        selectedUserIds.includes(record.user.id)
+    );
+    const groupedData = filteredData.reduce((acc, record) => {
         const category = record.category.category;
         const amount = record.amount;
         if (!acc[category]) {

@@ -72,10 +72,10 @@ const Profile = () => {
                     <Card.Title className="text-center">
                         Профиль пользователя
                     </Card.Title>
-                    <Card.Img
+                    <img
                         src={imagePreview}
                         alt="Profile"
-                        style={{ width: '150px', height: '150px', borderRadius: '50%', marginBottom: '15px' }}
+                        style={{ height: '150px',  marginBottom: '15px', alignContent: "center"}}
                     />
 
                     <Card.Text>

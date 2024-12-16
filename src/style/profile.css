@@ -6,8 +6,8 @@
 }
 
 .container {
-    max-width: 600px; /* Ограничиваем ширину контейнера */
-    margin: auto; /* Центрируем */
+    max-width: 600px;
+    margin: auto;
 }
 
 .card-title {
@@ -16,5 +16,5 @@
 }
 
 button {
-    width: 100%; /* Кнопка на всю ширину */
+    width: 100%;
 }

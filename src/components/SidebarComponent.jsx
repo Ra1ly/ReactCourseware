@@ -4,8 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../style/sidebar.css';
 import { Modal, Button, Form, CardImg } from "react-bootstrap";
-import {getUserImage} from "../services/UserService.js";
-import {createFamily, getFamilyByUser, joinFamilyByInvitationCode, leaveFamily} from "../services/FamilyService.js";
+import { getUserImage } from "../services/UserService.js";
+import {
+    createFamily,
+    getCurrentFamily,
+    getFamilyByUser,
+    joinFamilyByInvitationCode,
+    leaveFamily
+} from "../services/FamilyService.js";
 
 const MySidebar = () => {
     const navigate = useNavigate();
@@ -37,8 +43,9 @@ const MySidebar = () => {
 
         const fetchFamily = async () => {
             try {
-                const familyData = await getFamilyByUser();
-                setFamily(familyData);
+                getFamilyByUser();
+                setFamily(sessionStorage.getItem("family"));
+
             } catch (error) {
                 console.error("Error fetching family:", error);
             }
@@ -56,7 +63,7 @@ const MySidebar = () => {
 
     const handleLeaveFamily = () => {
         leaveFamily();
-        sessionStorage.setItem("family",null);
+        sessionStorage.setItem("family", null);
         setFamily(null);
         console.log("User has left the family.");
     };
@@ -84,14 +91,14 @@ const MySidebar = () => {
             <CardImg
                 src={imagePreview}
                 alt="User"
-                style={{ width: '40%' }}
+                className="card-img"
             />
             <Menu>
                 <MenuItem onClick={() => navigate('/profile')}>Профиль</MenuItem>
                 <SubMenu label="Семья">
                     {family ? (
                         <>
-                            <MenuItem onClick={() => navigate("/family")}>{family.familyName}</MenuItem>
+                            <MenuItem onClick={() => navigate("/family")}>{getCurrentFamily().familyName}</MenuItem>
                             <MenuItem onClick={handleLeaveFamily}>Выйти из семьи</MenuItem>
                         </>
                     ) : (

@@ -2,6 +2,7 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import AuthService from "../services/AuthService.js";
+import {useNavigate} from "react-router-dom";
 
 const Register = () => {
     const initialValues = {
@@ -9,6 +10,7 @@ const Register = () => {
         email: "",
         password: ""
     };
+    const navigate = useNavigate();
 
     const validationSchema = Yup.object().shape({
         username: Yup.string()
@@ -40,6 +42,7 @@ const Register = () => {
             }
         ).finally(() => {
             setSubmitting(false);
+            navigate("/login")
         });
     };
 

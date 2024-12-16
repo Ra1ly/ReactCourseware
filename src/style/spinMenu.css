@@ -48,6 +48,10 @@
     cursor: pointer;
     color: #ff0000;
     font-size: 20px;
+    padding: 0;
+    width: auto;
+    height: auto;
+    z-index: 10;
 }
 
 .delete-card-button:hover {

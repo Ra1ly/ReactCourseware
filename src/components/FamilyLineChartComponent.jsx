@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { Line } from "react-chartjs-2";
 import {
     Chart as ChartJS,
@@ -10,12 +10,27 @@ import {
     Legend,
     CategoryScale
 } from 'chart.js';
+import {listFamilyRecords} from "../services/FamilyService.js";
 
 ChartJS.register(LineElement, PointElement, LinearScale, Title, Tooltip, Legend, CategoryScale);
 
-const Chart = ({ records }) => {
-    // Группировка данных для линейной диаграммы
-    const lineData = records.reduce((acc, record) => {
+const Chart = ({ selectedUserIds }) => {
+    const [records, setRecords] = useState([]);
+
+    useEffect(() => {
+        listFamilyRecords()
+            .then((response) => {
+                setRecords(response.data);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }, []);
+
+    const filteredData = records.filter(record =>
+        selectedUserIds.includes(record.user.id)
+    );
+    const lineData = filteredData.reduce((acc, record) => {
         const date = record.date;
         if (!acc[date]) {
             acc[date] = 0;

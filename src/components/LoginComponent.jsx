@@ -85,7 +85,7 @@ const Login = () => {
                             {status && status.message && (
                                 <div className="form-group mb-3">
                                     <div className="alert alert-danger" role="alert">
-                                        {status.message}
+                                        Неправильный логин или пароль
                                     </div>
                                 </div>
                             )}
